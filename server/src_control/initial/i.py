@@ -6,6 +6,8 @@ import hashlib, random
 import zipfile
 import shutil
 import threading
+import platform
+import uuid
 from io import BytesIO
 
 
@@ -54,11 +56,23 @@ class Client:
         credentials = f"{self.username}:{self.password}"
         return base64.b64encode(credentials.encode()).decode()
 
+    def __get_system_hash(self):
+        os_info = platform.platform()
+        cpu_info = platform.processor()
+        ram_info = str(os.sysconf('SC_PAGE_SIZE') * os.sysconf('SC_PHYS_PAGES')) if os.name != 'nt' else str(os.sysconf('SC_PAGE_SIZE') * os.sysconf('SC_PHYS_PAGES'))
+        disk_info = "Disk serial info not available on this OS"
+        mac = ':'.join(['{:02x}'.format((uuid.getnode() >> elements) & 0xff) for elements in range(0, 2*6, 2)][::-1])
+        username = os.getlogin() if os.name != 'nt' else os.environ.get('USERNAME')
+        system_info = f"{os_info}|{cpu_info}|{ram_info}|{disk_info}|{mac}|{username}"
+        return hashlib.sha256(system_info.encode()).hexdigest()
+
+    
     def register(self):
         registration_data = {
             'pid': self.pid,
             'username': self.username,
-            'local_ip': self.local_ip
+            'local_ip': self.local_ip,
+            'system_hash': self.__get_system_hash()
         }
         response = requests.post(
             f"{self.server_url}/registrate",
@@ -67,14 +81,17 @@ class Client:
         )
         return response
 
-    def get_modules(self):
+    def get_modules(self, cuuid):
         key = hashlib.pbkdf2_hmac('sha256', os.urandom(32), os.urandom(32), random.randint(100000, 999999))
         k = base64.b64encode(key).decode()
 
         data = {
+            "cuuid": cuuid,
             "key": k,
         }
         q = requests.post(self.server_url + '/share', auth=self.creds, data=data)
+        if not q.ok:
+            return q.status_code
         # print(q.content)
         z = zipfile.ZipFile(BytesIO(base64.b64decode(q.content)))
         z.extractall("./test")
@@ -94,8 +111,9 @@ if __name__ == "__main__":
     client = Client('http://127.0.0.1:1337', ('admin', 'password'), "secret_key")
     registration_response = client.register()
     if registration_response.status_code == 200:
-        print("Registration successful.")
-        modules_response = client.get_modules()
+        cuuid = registration_response.text
+        print(f"Registration successful. {cuuid=}")
+        modules_response = client.get_modules(cuuid)
         if modules_response == 200:
             print("Modules received successfully.")
         else:

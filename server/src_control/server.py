@@ -1,7 +1,6 @@
 import os
 import zipfile
 import base64
-import sqlite3
 import uuid
 import threading
 import shutil
@@ -88,20 +87,27 @@ class RequestHandler(BaseHTTPRequestHandler):
         pid = int(user_info.get('pid', [None])[0])
         username = user_info.get('username', [None])[0]
         local_ip = user_info.get('local_ip', [None])[0]
+        system_hash = user_info.get('system_hash', [None])[0]
         if username is None or local_ip is None or pid is None:
             self.send_response(404)
             self.end_headers()
             #self.wfile.write(b'required')
             return
-        self.save_to_database(pid, username, local_ip)
-        self.send_response(200)
-        self.end_headers()
-        self.wfile.write(b'Registration successful')
+        cuuid = self.save_to_database(system_hash, pid, username, local_ip)
+        if not (cuuid is None):
+            self.send_response(200)
+            self.end_headers()
+            self.wfile.write(cuuid.encode())
+        else:
+            self.send_response(400)
+            self.end_headers()
+            self.wfile.write(b'already regs')
 
-    def save_to_database(self, pid, username, local_ip):
+    def save_to_database(self, system_hash, pid, username, local_ip):
         db = ComputerDatabase(self.DEFAULT_DB_PATH)
-        db.insert_computer(pid, username, local_ip)
-
+        cuuid = db.insert_computer(system_hash, pid, username, local_ip)
+        return cuuid
+    
     def check_auth(self, auth_header):
         auth_type, credentials = auth_header.split(' ', 1)
         if auth_type.lower() != 'basic':
