@@ -17,7 +17,7 @@ class Encryptor:
 
         raw = base64.b64encode(pad(raw).encode('ascii'))
         iv = get_random_bytes(AES.block_size)
-        cipher = AES.new(key=self.__key__, mode= AES.MODE_CFB,iv= iv)
+        cipher = AES.new(key=self.__key__, mode=AES.MODE_CFB ,iv=iv)
         return base64.b64encode(iv + cipher.encrypt(raw))
 
     def encrypt(self, fn):

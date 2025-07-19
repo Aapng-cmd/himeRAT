@@ -3,7 +3,6 @@ import hmac
 import hashlib
 import struct
 from typing import Tuple, List
-import base64
 
 class TCPEncryptor:
     def __init__(self, secret_key: bytes):
@@ -90,23 +89,23 @@ class TCPEncryptor:
         return (seq_num, plaintext)
 
 # Example Usage
-if __name__ == "__main__":
-    # Pre-shared key (must be 32 bytes)
-    SECRET_KEY = os.urandom(32)
+#if __name__ == "__main__":
+#    # Pre-shared key (must be 32 bytes)
+#    SECRET_KEY = os.urandom(32)
 
-    # Initialize encryptor/decryptor (simulating two endpoints)
-    alice = TCPEncryptor(SECRET_KEY)
-    bob = TCPEncryptor(SECRET_KEY)
+#    # Initialize encryptor/decryptor (simulating two endpoints)
+#    alice = TCPEncryptor(SECRET_KEY)
+#    bob = TCPEncryptor(SECRET_KEY)
 
-    # Alice sends a secure message
-    message = base64.b64encode(b"Mission-critical payload")
-    packet = alice.create_packet(message)
-    print(f"Encrypted Packet: {packet.hex()}")
+#    # Alice sends a secure message
+#    message = b"Mission-critical payload"
+#    packet = alice.create_packet(message)
+#    print(f"Encrypted Packet: {packet.hex()}")
 
-    # Bob receives and decrypts it
-    try:
-        seq, decrypted = bob.verify_packet(packet)
-        print(f"Decrypted (seq={seq}): {base64.b64decode(decrypted).decode()}")
-    except ValueError as e:
-        print(f"Decryption failed: {e}")
+#    # Bob receives and decrypts it
+#    try:
+#        seq, decrypted = bob.verify_packet(packet)
+#        print(f"Decrypted (seq={seq}): {decrypted.decode()}")
+#    except ValueError as e:
+#        print(f"Decryption failed: {e}")
 

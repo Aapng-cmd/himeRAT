@@ -42,8 +42,9 @@ class RequestHandler(BaseHTTPRequestHandler):
     def _encrypt_folder(self, path, key):
         e = Encryptor(key)
         for file in os.listdir(path):
-            if os.path.isfile(file):
-                e.encrypt(file)
+            p = path + "/" + file
+            if os.path.isfile(p):
+                e.encrypt(p)
 
     def handle_share(self):
         self.send_response(200)
@@ -57,9 +58,10 @@ class RequestHandler(BaseHTTPRequestHandler):
             self.send_response(404)
             self.end_headers()
             return
-        salt = ''.join(random.choice(string.ascii_lowercase) for _ in range(8))
+        salt = "_" + ''.join(random.choice(string.ascii_lowercase) for _ in range(8))
         directory_to_zip = './modules' + salt
         shutil.copytree("./modules", directory_to_zip)
+        self._encrypt_folder(directory_to_zip, base64.b64decode(key))
         zip_filename = 'archive' + salt + '.zip'
         with zipfile.ZipFile(zip_filename, 'w', zipfile.ZIP_DEFLATED) as zipf:
             for root, dirs, files in os.walk(directory_to_zip):

