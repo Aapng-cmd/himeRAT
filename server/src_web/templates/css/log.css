@@ -1,0 +1,120 @@
+/* Shared styles for registration and login pages */
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: linear-gradient(135deg, #1f4068, #16213e);
+  font-family: 'Poppins', sans-serif;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #f5f5f5;
+  user-select: none;
+}
+
+.container {
+  background: rgba(20, 20, 40, 0.95);
+  padding: 2.5rem 3rem;
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.6);
+  width: 100%;
+  max-width: 400px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+}
+
+.form h2 {
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+  font-size: 2rem;
+  color: #ff4c60;
+  text-align: center;
+  text-shadow: 1px 1px 5px #000;
+}
+
+.form label {
+  font-weight: 500;
+  margin-bottom: 0.3rem;
+  margin-top: 1rem;
+}
+
+.form input {
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  border: 2px solid transparent;
+  outline-offset: 2px;
+  font-size: 1rem;
+  background: #222945;
+  color: #eaeaea;
+  transition: border-color 0.3s ease, background-color 0.3s ease;
+  user-select: text;
+}
+
+.form input::placeholder {
+  color: #666e8a;
+}
+
+.form input:focus {
+  border-color: #ff4c60;
+  background: #2e345b;
+}
+
+.form button {
+  margin-top: 2rem;
+  padding: 0.75rem;
+  background-color: #ff4c60;
+  border: none;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  user-select: none;
+}
+
+.form button:hover,
+.form button:focus {
+  background-color: #e04357;
+  outline: none;
+}
+
+.switch {
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  color: #aaa9b8;
+  text-align: center;
+  user-select: none;
+}
+
+.switch a {
+  color: #ff4c60;
+  text-decoration: none;
+  font-weight: 600;
+  user-select: text;
+}
+
+.switch a:hover,
+.switch a:focus {
+  text-decoration: underline;
+  outline: none;
+}
+
+/* Responsive */
+@media (max-width: 500px) {
+  .container {
+    padding: 2rem;
+    margin: 1rem;
+  }
+}
