@@ -13,13 +13,15 @@ func InitRoutes(router *gin.Engine) {
     
     apiR := router.Group("/api").Use(AuthMiddleWare())
     {
-        apiR.GET("/workout/:uuid", workoutHandler)
+        apiR.POST("/computers/:id", computersHandler)
         apiR.GET("/statistics", statisticsHandler)
     }
-    
+
     roots := router.Group("").Use(AuthMiddleWare())
     {
         roots.GET("/home", homeHandlerT)
+        router.GET("/statistics", statisticsHandlerT)
+        roots.GET("/computers/:id", computersHandlerT)
     }
     
     router.GET("/register", registerHandlerT)

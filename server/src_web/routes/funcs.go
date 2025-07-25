@@ -7,22 +7,47 @@ import (
     "github.com/gin-gonic/gin"
     
     "himerat/db"
+    "himerat/models"
 )
 
-func workoutHandler(c *gin.Context) {
+func computersHandler(c *gin.Context) {
     uuid := c.Param("uuid")
     c.String(http.StatusOK, fmt.Sprintf("Handling workout for UUID: %s", uuid))
 }
 
 func statisticsHandler(c *gin.Context) {
-    var count int
-    err := db.DB.QueryRow("SELECT COUNT(*) FROM computers").Scan(&count)
+    // Slice to hold multiple Computer records
+    var computers []models.Computer
+
+    // Query to select all fields from the computers table
+    rows, err := db.DB.Query("SELECT * FROM computers")
     if err != nil {
         c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
         return
     }
-    c.JSON(http.StatusOK, gin.H{"registered_computers": count})
+    defer rows.Close()
+
+    // Iterate through the rows and scan the data into the computers slice
+    for rows.Next() {
+        var computer models.Computer
+        if err := rows.Scan(&computer.ID, &computer.SystemHash, &computer.PID, &computer.User, &computer.LocalIP, &computer.State); err != nil {
+            c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+            return
+        }
+        computers = append(computers, computer)
+    }
+
+    // Check for errors from iterating over rows
+    if err := rows.Err(); err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+        return
+    }
+
+    // Return the list of computers as JSON
+    c.JSON(http.StatusOK, computers)
 }
+
+
 
 func registerHandler(c *gin.Context) {
     var input struct {
@@ -93,3 +118,24 @@ func registerHandlerT(c *gin.Context) {
 func loginHandlerT(c *gin.Context) {
     c.HTML(http.StatusOK, "login.html", nil)
 }
+
+func statisticsHandlerT(c *gin.Context) {
+    c.HTML(http.StatusOK, "statistics.html", nil)
+}
+
+func computersHandlerT(c *gin.Context) {
+    uuid := c.Param("id")
+
+    // Fetch computer data from the database using the UUID
+    var computer models.Computer
+    err := db.DB.QueryRow("SELECT * FROM computers WHERE id = ?", uuid).Scan(&computer.ID, &computer.SystemHash, &computer.PID, &computer.User, &computer.LocalIP, &computer.State)
+    if err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+        return
+    }
+
+    // Render the template with the computer data
+    c.HTML(http.StatusOK, "computers.html", computer)
+}
+
+

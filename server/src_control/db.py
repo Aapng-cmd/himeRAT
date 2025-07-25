@@ -10,28 +10,27 @@ class ComputerDatabase:
         # Create a table to store computer records
         self.cursor.execute('''
         CREATE TABLE IF NOT EXISTS computers (
-            uuid TEXT PRIMARY KEY,
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
             system_hash TEXT UNIQUE,
             pid INT,
             user TEXT,
-            local_ip TEXT NOT NULL
+            local_ip TEXT NOT NULL,
+            status INTEGER DEFAULT 1
         )
         ''')
         self.conn.commit()
 
     def insert_computer(self, system_hash, pid, user, local_ip):
-        # Generate a UUID
-        computer_uuid = str(uuid.uuid4())
         
         # Insert the computer record into the table
         try:
             self.cursor.execute('''
-            INSERT INTO computers (uuid, system_hash, pid, user, local_ip) VALUES (?, ?, ?, ?, ?)
-            ''', (computer_uuid, system_hash, pid, user, local_ip))
+            INSERT INTO computers (system_hash, pid, user, local_ip) VALUES (?, ?, ?, ?)
+            ''', (system_hash, pid, user, local_ip))
             
             # Commit the changes
             self.conn.commit()
-            return computer_uuid
+            return self.cursor.lastrowid
         except sqlite3.IntegrityError:
             return None
     def get_computers(self):

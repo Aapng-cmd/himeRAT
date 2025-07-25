@@ -93,11 +93,11 @@ class RequestHandler(BaseHTTPRequestHandler):
             self.end_headers()
             #self.wfile.write(b'required')
             return
-        cuuid = self.save_to_database(system_hash, pid, username, local_ip)
-        if not (cuuid is None):
+        cid = self.save_to_database(system_hash, pid, username, local_ip)
+        if not (cid is None):
             self.send_response(200)
             self.end_headers()
-            self.wfile.write(cuuid.encode())
+            self.wfile.write(cid.encode())
         else:
             self.send_response(400)
             self.end_headers()
@@ -105,8 +105,8 @@ class RequestHandler(BaseHTTPRequestHandler):
 
     def save_to_database(self, system_hash, pid, username, local_ip):
         db = ComputerDatabase(self.DEFAULT_DB_PATH)
-        cuuid = db.insert_computer(system_hash, pid, username, local_ip)
-        return cuuid
+        cid = db.insert_computer(system_hash, pid, username, local_ip)
+        return cid
     
     def check_auth(self, auth_header):
         auth_type, credentials = auth_header.split(' ', 1)

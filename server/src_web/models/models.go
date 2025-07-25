@@ -2,11 +2,12 @@ package models
 
 
 type Computer struct {
-    UUID     string `json:"uuid"`
+    ID     int `json:"id"`
+    SystemHash string `json:"system_hash"`
     PID      int    `json:"pid"`
     User     string `json:"user"`
     LocalIP  string `json:"local_ip"`
-    SystemHash string `json:"system_hash"`
+    State    string `json:"state"`
 }
 
 type User struct {

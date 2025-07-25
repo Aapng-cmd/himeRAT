@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Computer Details - C2 Server</title>
+  <style>
+    /* Simple, clean style for computer details page */
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #1a1a2e;
+      color: #eaeaea;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      height: 100vh;
+    }
+
+    header {
+      width: 100%;
+      background: #16213e;
+      padding: 1rem 2rem;
+      box-sizing: border-box;
+      display: flex;
+      justify-content: flex-start;
+      gap: 1rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+    }
+
+    header a {
+      background: #0f3460;
+      padding: 0.6rem 1.2rem;
+      border-radius: 4px;
+      text-decoration: none;
+      color: #eaeaea;
+      font-weight: 600;
+      transition: background 0.3s ease;
+    }
+    header a:hover,
+    header a:focus {
+      background: #53354a;
+      outline: none;
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 2rem;
+    }
+
+    .computer-info {
+      margin-bottom: 2rem;
+      padding: 1rem;
+      background: #16213e;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+    }
+
+    button {
+      background: #ff4c60;
+      color: #eaeaea;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background: #ff1a3d;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <a href="/computers" aria-label="Go to computers">Computers</a>
+    <a href="/statistics" aria-label="Go to statistics">Statistics</a>
+  </header>
+
+  <main>
+    <h1>Computer Details</h1>
+    <div class="computer-info">
+      <p><strong>ID:</strong> {{.ID}}</p>
+      <p><strong>PID:</strong> {{.PID}}</p>
+      <p><strong>User:</strong> {{.User }}</p>
+      <p><strong>Local IP:</strong> {{.LocalIP}}</p>
+      <p><strong>System Hash:</strong> {{.SystemHash}}</p>
+      <p><strong>State:</strong> {{.State}}</p>
+    </div>
+    <button id="interactiveShellButton">Open Interactive Shell</button>
+  </main>
+
+  <script>
+    document.getElementById('interactiveShellButton').addEventListener('click', function() {
+      const computerId = {{.ID}}; // Get the ID from the template
+      fetch(`/api/computers/${computerId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ action: 'open_shell' }) // Example payload
+      })
+      .then(response => {
+        if (response.ok) {
+          alert('Interactive shell opened successfully!');
+        } else {
+          alert('Failed to open interactive shell.');
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while opening the interactive shell.');
+      });
+    });
+  </script>
+</body>
+</html>
+
