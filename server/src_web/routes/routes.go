@@ -1,31 +1,25 @@
 package routes
 
 import (
-    "github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin"
 )
 
 func InitRoutes(router *gin.Engine) {
-    apiRoutes := router.Group("/api")
-    {
-        apiRoutes.POST("/register", registerHandler)
-        apiRoutes.POST("/login", loginHandler)
-    }
-    
-    apiR := router.Group("/api").Use(AuthMiddleWare())
-    {
-        apiR.POST("/computers/:id", computersHandler)
-        apiR.GET("/statistics", statisticsHandler)
-    }
+	router.GET("/", loginHandlerT)
+	router.GET("/login", loginHandlerT)
+	router.GET("/register", registerHandlerT)
 
-    roots := router.Group("").Use(AuthMiddleWare())
-    {
-        roots.GET("/home", homeHandlerT)
-        router.GET("/statistics", statisticsHandlerT)
-        roots.GET("/computers/:id", computersHandlerT)
-    }
-    
-    router.GET("/register", registerHandlerT)
-    router.GET("/login", loginHandlerT)
-    
-    router.GET("/", loginHandlerT)
+	router.POST("/api/register", registerHandler)
+	router.POST("/api/login", loginHandler)
+
+	auth := router.Group("/").Use(AuthMiddleWare())
+	api := router.Group("/api").Use(AuthMiddleWare())
+
+	auth.GET("/home", homeHandlerT)
+	auth.GET("/statistics", statisticsHandlerT)
+	auth.GET("/computers/:id", computersHandlerT)
+
+	api.GET("/statistics", statisticsHandler)
+	api.GET("/computers/:id", computerDetailHandler)
+	api.POST("/computers/:id/task", enqueueTaskHandler)
 }

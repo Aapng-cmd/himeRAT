@@ -1,1 +1,4 @@
 server/computers.db
+server/certs/
+__pycache__/
+*.pyc

@@ -1,0 +1,15 @@
+FROM python:3.12-slim
+WORKDIR /app
+COPY server/src_control/requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+COPY server/src_control/ /app/
+ENV BEACON_MODULES=/beacon/modules
+ENV BEACON_DATA=/beacon/data
+COPY beacon/modules /beacon/modules
+COPY beacon/data /beacon/data
+ENV CONTROL_PORT=1337
+ENV DB_PATH=/data/computers.db
+ENV LAB_USER=admin
+ENV LAB_PASS=password
+EXPOSE 1337 9090 9091
+CMD ["python", "server.py"]

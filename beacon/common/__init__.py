@@ -1,0 +1,1 @@
+# beacon common package

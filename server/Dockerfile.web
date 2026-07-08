@@ -1,0 +1,20 @@
+FROM golang:1.24-alpine AS build
+WORKDIR /app
+COPY server/src_web/go.mod server/src_web/go.sum ./
+RUN go mod download
+COPY server/src_web/ ./
+RUN apk add --no-cache gcc musl-dev sqlite-dev \
+  && CGO_ENABLED=1 go build -o /panel server.go
+
+FROM alpine:3.20
+RUN apk add --no-cache ca-certificates sqlite-libs
+WORKDIR /app
+COPY --from=build /panel /app/panel
+COPY server/src_web/templates /app/templates
+ENV WEB_ADDR=:8443
+ENV DB_PATH=/data/computers.db
+ENV TLS_CERT=/data/certs/cert.pem
+ENV TLS_KEY=/data/certs/key.pem
+ENV JWT_SECRET=lab-jwt-change-me
+EXPOSE 8443
+CMD ["/app/panel"]

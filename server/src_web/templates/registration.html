@@ -1,85 +1,38 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Register - C2 Server</title>
-  <link rel="stylesheet" href="css/log.css" />
+  <title>Регистрация — лаборатория</title>
+  <link rel="stylesheet" href="/css/log.css" />
 </head>
 <body>
   <div class="container">
-    <form id="registerForm" class="form">
-      <h2>Register</h2>
-      <label for="username">Username</label>
-      <input id="username" name="username" type="text" autocomplete="username" required />
-
-      <label for="password">Password</label>
-      <input id="password" name="password" type="password" autocomplete="new-password" required />
-
-      <label for="confirm_password">Confirm Password</label>
-      <input id="confirm_password" name="confirm_password" type="password" autocomplete="new-password" required />
-
-      <button type="submit">Register</button>
-      <p class="switch">Already have an account? <a href="/login">Login</a></p>
-      
-      <!-- Error message paragraph -->
-      <p id="errorMessage" class="error" style="display: none;"></p>
-      <!-- Success message paragraph -->
-      <p id="successMessage" class="success" style="display: none; color: #4caf50; text-align: center;"></p>
+    <form id="regForm" class="form">
+      <h2>Регистрация оператора</h2>
+      <label for="username">Логин</label>
+      <input id="username" type="text" required />
+      <label for="password">Пароль</label>
+      <input id="password" type="password" required />
+      <button type="submit">Создать</button>
+      <p class="switch"><a href="/login">Вход</a></p>
+      <p id="msg" class="error" style="display:none;"></p>
     </form>
   </div>
-
   <script>
-    document.getElementById('registerForm').addEventListener('submit', function(event) {
-      event.preventDefault(); // Prevent the default form submission
-
-      // Gather form data
-      const formData = {
-        username: document.getElementById('username').value,
-        password: document.getElementById('password').value,
-        confirm_password: document.getElementById('confirm_password').value
-      };
-
-      // Clear previous messages
-      const errorMessageElement = document.getElementById('errorMessage');
-      const successMessageElement = document.getElementById('successMessage');
-      errorMessageElement.style.display = 'none';
-      errorMessageElement.textContent = '';
-      successMessageElement.style.display = 'none';
-      successMessageElement.textContent = '';
-
-      // Send data as JSON using Fetch API
+    document.getElementById('regForm').onsubmit = e => {
+      e.preventDefault();
       fetch('/api/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
-      })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        return response.json();
-      })
-      .then(data => {
-        // Handle success
-        successMessageElement.textContent = 'Registration successful! Redirecting to login...';
-        successMessageElement.style.display = 'block'; // Show the success message
-
-        // Redirect to the login page after a short delay
-        setTimeout(() => {
-          window.location.href = '/login';
-        }, 500); // Redirect after 2 seconds
-      })
-      .catch((error) => {
-        // Handle error
-        console.error('Error:', error);
-        errorMessageElement.textContent = 'Registration failed. Please try again.';
-        errorMessageElement.style.display = 'block'; // Show the error message
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({
+          username: document.getElementById('username').value,
+          password: document.getElementById('password').value
+        })
+      }).then(r => r.json()).then(d => {
+        document.getElementById('msg').textContent = d.message || d.error;
+        document.getElementById('msg').style.display = 'block';
+        if (d.message) setTimeout(() => location.href='/login', 600);
       });
-    });
+    };
   </script>
 </body>
 </html>
-

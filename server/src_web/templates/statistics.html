@@ -1,144 +1,59 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Statistics - C2 Server</title>
+  <title>Узлы — панель лаборатории</title>
   <style>
-    /* Simple, clean style for statistics page */
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #1a1a2e;
-      color: #eaeaea;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      height: 100vh;
-    }
-
-    header {
-      width: 100%;
-      background: #16213e;
-      padding: 1rem 2rem;
-      box-sizing: border-box;
-      display: flex;
-      justify-content: flex-start;
-      gap: 1rem;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.5);
-    }
-
-    header a {
-      background: #0f3460;
-      padding: 0.6rem 1.2rem;
-      border-radius: 4px;
-      text-decoration: none;
-      color: #eaeaea;
-      font-weight: 600;
-      transition: background 0.3s ease;
-    }
-    header a:hover,
-    header a:focus {
-      background: #53354a;
-      outline: none;
-    }
-
-    main {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      padding: 2rem;
-    }
-
-    table {
-      width: 100%;
-      max-width: 800px;
-      border-collapse: collapse;
-      margin-top: 2rem;
-    }
-
-    th, td {
-      padding: 1rem;
-      border: 1px solid #eaeaea;
-      text-align: left;
-    }
-
-    th {
-      background: #0f3460;
-    }
-
-    tr:nth-child(even) {
-      background: #16213e;
-    }
-
-    a {
-      background: #ff4c60;
-      color: #eaeaea;
-      border: none;
-      padding: 0.5rem 1rem;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: background 0.3s ease;
-    }
-
-    a:hover {
-      background: #ff1a3d;
-    }
+    body { margin:0; font-family:'Segoe UI',sans-serif; background:#1a1a2e; color:#eaeaea; }
+    header { background:#16213e; padding:1rem 2rem; display:flex; gap:1rem; }
+    header a { background:#0f3460; padding:.6rem 1.2rem; border-radius:4px; color:#eaeaea; text-decoration:none; }
+    main { padding:2rem; max-width:1100px; margin:0 auto; }
+    table { width:100%; border-collapse:collapse; margin-top:1rem; }
+    th,td { padding:.75rem; border:1px solid #333; text-align:left; }
+    th { background:#0f3460; }
+    tr:nth-child(even) { background:#16213e; }
+    .btn { background:#ff4c60; color:#fff; border:none; padding:.4rem .8rem; border-radius:4px; cursor:pointer; text-decoration:none; display:inline-block; }
   </style>
 </head>
 <body>
   <header>
-    <a href="/computers" aria-label="Go to computers">Computers</a>
-    <a href="/statistics" aria-label="Go to statistics">Statistics</a>
+    <a href="/statistics">Узлы</a>
+    <a href="/home">Главная</a>
   </header>
-
   <main>
-    <h1>Statistics</h1>
-    <table id="statisticsTable">
+    <h1>Зарегистрированные узлы</h1>
+    <table id="nodes">
       <thead>
         <tr>
           <th>ID</th>
-          <th>Username</th>
-          <th>Local IP</th>
-          <th>Status</th>
-          <th>Action</th>
+          <th>Хост</th>
+          <th>Пользователь</th>
+          <th>IP</th>
+          <th>Ядро</th>
+          <th>Последний контакт</th>
+          <th></th>
         </tr>
       </thead>
-      <tbody>
-        <!-- Data will be populated here -->
-      </tbody>
+      <tbody></tbody>
     </table>
   </main>
-
   <script>
-    async function fetchStatistics() {
-      try {
-        const response = await fetch('/api/statistics');
-        const data = await response.json();
-        const tableBody = document.getElementById('statisticsTable').querySelector('tbody');
-
-        data.forEach(item => {
-          const row = document.createElement('tr');
-          row.innerHTML = `
-            <td>${item.id}</td>
-            <td>${item.user}</td>
-            <td>${item.local_ip}</td>
-            <td>${item.status}</td>
-            <td><a href="/computers/${item.id}">View</a></td>
-          `;
-          tableBody.appendChild(row);
-        });
-      } catch (error) {
-        console.error('Error fetching statistics:', error);
-      }
-    }
-
-    // Fetch statistics on page load
-    window.onload = fetchStatistics;
+    fetch('/api/statistics').then(r => r.json()).then(rows => {
+      const tb = document.querySelector('#nodes tbody');
+      rows.forEach(n => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${n.id}</td>
+          <td>${n.hostname || '—'}</td>
+          <td>${n.user}</td>
+          <td>${n.local_ip}</td>
+          <td>${n.kernel || '—'}</td>
+          <td>${n.last_seen || '—'}</td>
+          <td><a class="btn" href="/computers/${n.id}">Открыть</a></td>`;
+        tb.appendChild(tr);
+      });
+    });
   </script>
 </body>
 </html>
-

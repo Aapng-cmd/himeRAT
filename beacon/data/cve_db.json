@@ -1,0 +1,32 @@
+[
+  {
+    "cve_id": "CVE-2021-4034",
+    "kernels": ["5.4.*", "5.10.*", "5.11.*", "5.13.*", "5.15.0", "5.15.1", "5.15.2"],
+    "description": "Polkit pkexec local privilege escalation (PwnKit)",
+    "severity": "high"
+  },
+  {
+    "cve_id": "CVE-2022-0847",
+    "kernels": ["5.8.*", "5.10.*", "5.11.*", "5.12.*", "5.13.*", "5.14.*", "5.15.*", "5.16.*", "5.17.0"],
+    "description": "Dirty Pipe — kernel page cache overwrite",
+    "severity": "high"
+  },
+  {
+    "cve_id": "CVE-2021-3493",
+    "kernels": ["5.4.*", "5.8.*", "5.11.*"],
+    "description": "OverlayFS Ubuntu LPE",
+    "severity": "high"
+  },
+  {
+    "cve_id": "CVE-2022-2588",
+    "kernels": ["5.15.*", "5.16.*", "5.17.*", "5.18.*", "5.19.*"],
+    "description": "cls_route UAF in net/sched",
+    "severity": "high"
+  },
+  {
+    "cve_id": "CVE-2016-5195",
+    "kernels": ["2.6.*", "3.*", "4.4.*", "4.8.*"],
+    "description": "Dirty COW — copy-on-write race condition",
+    "severity": "high"
+  }
+]

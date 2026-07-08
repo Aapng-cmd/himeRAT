@@ -1,80 +1,25 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Home - C2 Server</title>
+  <title>Главная — лаборатория</title>
   <style>
-    /* Simple, clean style for home */
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #1a1a2e;
-      color: #eaeaea;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      height: 100vh;
-    }
-
-    header {
-      width: 100%;
-      background: #16213e;
-      padding: 1rem 2rem;
-      box-sizing: border-box;
-      display: flex;
-      justify-content: flex-start;
-      gap: 1rem;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.5);
-    }
-
-    header a {
-      background: #0f3460;
-      padding: 0.6rem 1.2rem;
-      border-radius: 4px;
-      text-decoration: none;
-      color: #eaeaea;
-      font-weight: 600;
-      transition: background 0.3s ease;
-    }
-    header a:hover,
-    header a:focus {
-      background: #53354a;
-      outline: none;
-    }
-
-    main {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      padding: 2rem;
-    }
-    main h1 {
-      font-size: 2.5rem;
-      margin-bottom: 1rem;
-      color: #ff4c60;
-      text-shadow: 2px 2px 5px #000;
-    }
-    main p {
-      font-size: 1.2rem;
-      max-width: 600px;
-      line-height: 1.6;
-      color: #c1c1c1;
-    }
+    body { margin:0; font-family:'Segoe UI',sans-serif; background:#1a1a2e; color:#eaeaea; }
+    header { background:#16213e; padding:1rem 2rem; display:flex; gap:1rem; }
+    header a { background:#0f3460; padding:.6rem 1.2rem; border-radius:4px; color:#eaeaea; text-decoration:none; }
+    main { padding:3rem; text-align:center; }
+    h1 { color:#ff4c60; }
   </style>
 </head>
 <body>
   <header>
-    <a href="/computers" aria-label="Go to computers">Computers</a>
-    <a href="/statistics" aria-label="Go to statistics">Statistics</a>
+    <a href="/statistics">Узлы</a>
+    <a href="/home">Главная</a>
   </header>
-
   <main>
-    <h1>C2 Server Home</h1>
-    <p>Welcome to the C2 server dashboard. Use the buttons above to manage connected clients or view statistics.</p>
+    <h1>Панель лаборатории himeRAT</h1>
+    <p>Учебный стенд для демонстрации многостадийной синхронизации узлов и модулей инвентаризации.<br>
+    Используйте раздел «Узлы» для постановки заданий и просмотра отчётов.</p>
   </main>
 </body>
 </html>

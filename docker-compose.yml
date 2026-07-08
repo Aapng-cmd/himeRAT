@@ -1,0 +1,34 @@
+services:
+  control:
+    build:
+      context: .
+      dockerfile: server/Dockerfile.control
+    ports:
+      - "1337:1337"
+      - "9090:9090"
+      - "9091:9091"
+    volumes:
+      - labdata:/data
+    environment:
+      DB_PATH: /data/computers.db
+      LAB_USER: admin
+      LAB_PASS: password
+
+  web:
+    build:
+      context: .
+      dockerfile: server/Dockerfile.web
+    ports:
+      - "8443:8443"
+    volumes:
+      - labdata:/data
+    environment:
+      DB_PATH: /data/computers.db
+      JWT_SECRET: ${JWT_SECRET:-lab-jwt-secret}
+      TLS_CERT: /data/certs/cert.pem
+      TLS_KEY: /data/certs/key.pem
+    depends_on:
+      - control
+
+volumes:
+  labdata:
